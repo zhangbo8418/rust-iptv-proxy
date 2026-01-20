@@ -22,41 +22,6 @@ Options:
 - `/playlist`: m3u8 list
 - `/xmltv`: EGP
 
-### Docker
-
-方式 A：RUN传入参数
-这是最直接的方式，追加在镜像名后的内容会自动拼接到 iptv 后面。
-```
-docker run -d \
-  --name iptv-proxy \
-  -p 7878:7878 \
-  ghcr.io/mjl371/rust-iptv-proxy:latest \
-  --user "你的账号" \
-  --passwd "你的密码" \
-  --mac "你的MAC地址" \
-  --udp-proxy
-```
-方式 B：Docker Compose（推荐）
-如果你希望在 docker-compose.yml 中管理，可以利用环境变量来传参：
-YAML
-```
-services:
-  iptv-proxy:
-    image: ghcr.io/mjl371/rust-iptv-proxy:latest
-    container_name: iptv-proxy
-    ports:
-      - "7878:7878"
-    # 使用 command 覆盖默认的 CMD
-    command: >
-      --user "${IPTV_USER}"
-      --passwd "${IPTV_PASS}"
-      --mac "${IPTV_MAC}"
-      --udp-proxy
-    restart: always
-```
-注：你可以在目录下创建一个 .env 文件存放 IPTV_USER 等敏感信息。
-
-
 ### Example init.d
 
 ```sh
@@ -119,3 +84,38 @@ export STAGING_DIR=$PKG_CONFIG_SYSROOT_DIR
 export RUSTFLAGS="-C target-feature=-crt-static -Zlocation-detail=none -C linker=$(ls ${toolchain}/bin/*-openwrt-linux-gcc)"
 cargo build -r --target x86_64-unknown-linux-musl --features tls
 ```
+
+### Docker
+
+#### RUN
+Use `docker run`:
+
+```bash
+docker run -d \
+  --name iptv-proxy \
+  -p 7878:7878 \
+  rust-iptv-proxy:latest \
+  --user "account" \
+  --passwd "password" \
+  --mac "mac" \
+  --udp-proxy
+```
+#### Compose (recommended)
+example docker-compose.yml:
+
+```YAML
+services:
+  iptv-proxy:
+    image: rust-iptv-proxy:latest
+    container_name: iptv-proxy
+    ports:
+      - "7878:7878"
+    command: >
+      --user "${IPTV_USER}"
+      --passwd "${IPTV_PASS}"
+      --mac "${IPTV_MAC}"
+      --udp-proxy
+    restart: always
+```
+Note: use `.env` to store environmental variables.
+
