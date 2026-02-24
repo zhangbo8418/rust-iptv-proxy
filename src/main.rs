@@ -249,7 +249,7 @@ async fn playlist(args: Data<Args>, req: HttpRequest) -> impl Responder {
             }
         }
         Ok(ch) => {
-            let playlist = String::from("#EXTM3U\n")
+            let playlist = format!("#EXTM3U x-tvg-url=\"{}://{}/xmltv\"\n", scheme, host)
                 + &ch
                     .into_iter()
                     .map(|c| {
